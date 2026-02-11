@@ -1,28 +1,97 @@
-import axios, { AxiosError } from 'axios';
-import { User } from '../context/AuthContext';
+// frontend/utils/api.ts
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
-// ✅ Updated to point to your live backend on Render
-const API_BASE_URL = 'https://gloweazy-backend.onrender.com';
+let logoutHandler: (() => void) | null = null;
+export const setLogoutHandler = (fn: () => void) => {
+  logoutHandler = fn;
+};
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: { 'Content-Type': 'application/json' }
+  baseURL: "https://gloweazy-backend.onrender.com",
+  timeout: 15000,
 });
 
-function getErrorMessage(error: unknown): string {
-  const err = error as AxiosError<{ message?: string }>;
-  return err.response?.data?.message || err.message || 'Request failed';
-}
+// Attach token automatically
+api.interceptors.request.use(async (config) => {
+  const token = await AsyncStorage.getItem("gloweazy_token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
-type LoginPayload = { email: string; password: string };
-type SignupPayload = { email: string; password: string; role: 'client' | 'stylist' };
+// Auto‑logout on 401
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401 && logoutHandler) {
+      logoutHandler(); // call AuthContext.logout()
+    }
+    return Promise.reject(error);
+  }
+);
 
-export async function login(payload: LoginPayload): Promise<User> {
-  const { data } = await api.post<User>('/auth/login', payload);
-  return data;
-}
+// Auth
+export const login = async (payload: { email: string; password: string }) => {
+  const res = await api.post("/auth/login", payload);
+  return res.data; // returns { user, token }
+};
 
-export async function signup(payload: SignupPayload): Promise<User> {
-  const { data } = await api.post<User>('/auth/signup', payload);
-  return data;
-}
+export const signup = async (payload: { email: string; password: string; role: "client" | "stylist" }) => {
+  const res = await api.post("/auth/signup", payload);
+  return res.data; // returns { user, token }
+};
+
+// Wallet
+export const getWallet = async (userId: string) => {
+  const res = await api.get(`/wallet/${userId}`);
+  const data = res.data.wallet ?? res.data;
+  return data as { balance: number; transactions: WalletTransaction[] };
+};
+
+export const topupWallet = async (payload: { userId: string; amount: number; method: "card" | "mobile_money" }) => {
+  const res = await api.post("/wallet/topup", payload);
+  return res.data;
+};
+
+export const confirmTopup = async (payload: { userId: string; reference: string }) => {
+  const res = await api.post("/wallet/confirm", payload);
+  return res.data;
+};
+
+export const debitWallet = async (payload: { userId: string; amount: number; bookingId: string }) => {
+  const res = await api.post("/wallet/debit", payload);
+  return res.data;
+};
+
+// Payments
+export const checkoutPayment = async (payload: {
+  bookingId: string;
+  method: "card" | "mobile_money" | "cash";
+  amount: number;
+}) => {
+  const res = await api.post("/payments/checkout", payload);
+  return res.data;
+};
+
+// Transactions
+export const getTransactions = async (userId: string) => {
+  const res = await api.get(`/transactions/${userId}`);
+  const data = res.data.transactions ?? res.data;
+  return data as WalletTransaction[];
+};
+
+// Types
+export type WalletTransaction = {
+  id: string;
+  type: "credit" | "debit";
+  amount: number;
+  currency: "GHS" | "USD" | "NGN";
+  method: "card" | "mobile_money" | "cash" | "wallet" | "adjustment";
+  reference?: string;
+  createdAt: string;
+  note?: string;
+};
+
+export default api;

@@ -6,8 +6,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
+import { IconSymbol } from '@components/ui/icon-symbol';
+import { Colors } from '@constants/theme';
 
 export function Collapsible({ children, title }: PropsWithChildren<{ title: string }>) {
   const [isOpen, setIsOpen] = useState(false);

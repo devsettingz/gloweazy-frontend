@@ -2,33 +2,35 @@ import axios from 'axios';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useAuth } from '../../context/AuthContext'; // ✅ fixed path
 
 export default function ProfileSetupScreen() {
-  const [name, setName] = useState<string>('');
-  const [phone, setPhone] = useState<string>('');
-  const [businessName, setBusinessName] = useState<string>(''); // stylist only
-  const [bio, setBio] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
-  const router = useRouter();
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [businessName, setBusinessName] = useState('');
+  const [bio, setBio] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  // ✅ Helper to bypass ts(2345) route typing
-  const go = (path: string) => router.push(path as any);
+  const router = useRouter();
+  const { user } = useAuth(); // ✅ get user ID for backend
 
   const handleProfileSetup = async () => {
     setLoading(true);
     try {
       const res = await axios.post('https://gloweazy-backend.onrender.com/auth/profile', {
+        id: user?.id,
         name,
         phone,
         businessName,
-        bio
+        bio,
       });
+
       Alert.alert('Success', String(res.data.message || 'Profile setup complete'));
       setName('');
       setPhone('');
       setBusinessName('');
       setBio('');
-      go('/dashboard'); // redirect to main app after setup
+      router.replace('/dashboard'); // ✅ typed navigation
     } catch (err: any) {
       const errorMsg = String(err?.response?.data?.message || 'Profile setup failed');
       Alert.alert('Error', errorMsg);
@@ -91,6 +93,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 5,
     color: 'white',
-    backgroundColor: '#222'
-  }
+    backgroundColor: '#222',
+  },
 });

@@ -1,16 +1,28 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { setLogoutHandler } from '../utils/api';
 
+// ✅ Define reusable role type
+export type UserRole = 'client' | 'stylist' | 'admin';
+
+// ✅ Extended User type to include name, bio, avatarUrl, lastLogin, and lastActivity
 export type User = {
-  id: number;
+  id: string;
   email: string;
-  role: 'client' | 'stylist';
+  role: UserRole; // ✅ now includes "admin"
+  name?: string;
+  bio?: string;
+  avatarUrl?: string;
+  lastLogin?: string;
+  lastActivity?: string;
 };
 
 type AuthContextType = {
   user: User | null;
-  login: (user: User) => Promise<void>;
+  token: string | null;
+  login: (user: User, token: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateActivity: () => Promise<void>;
   loading: boolean;
 };
 
@@ -18,32 +30,53 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadUser = async () => {
+    const loadAuth = async () => {
       try {
-        const stored = await AsyncStorage.getItem('authUser');
-        if (stored) setUser(JSON.parse(stored) as User);
+        const storedUser = await AsyncStorage.getItem('authUser');
+        const storedToken = await AsyncStorage.getItem('authToken');
+        if (storedUser) setUser(JSON.parse(storedUser) as User);
+        if (storedToken) setToken(storedToken);
       } finally {
         setLoading(false);
       }
     };
-    loadUser();
+    loadAuth();
+
+    // ✅ Register logout handler with axios
+    setLogoutHandler(logout);
   }, []);
 
-  const login = async (u: User) => {
-    await AsyncStorage.setItem('authUser', JSON.stringify(u));
-    setUser(u);
+  const login = async (u: User, t: string) => {
+    // ✅ Add lastLogin timestamp when user logs in
+    const userWithLogin = { ...u, lastLogin: new Date().toISOString() };
+    await AsyncStorage.setItem('authUser', JSON.stringify(userWithLogin));
+    await AsyncStorage.setItem('authToken', t);
+    setUser(userWithLogin);
+    setToken(t);
   };
 
   const logout = async () => {
     await AsyncStorage.removeItem('authUser');
+    await AsyncStorage.removeItem('authToken');
     setUser(null);
+    setToken(null);
+  };
+
+  // ✅ Update lastActivity whenever user performs an action
+  const updateActivity = async () => {
+    if (user) {
+      const updatedUser = { ...user, lastActivity: new Date().toISOString() };
+      await AsyncStorage.setItem('authUser', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, token, login, logout, updateActivity, loading }}>
       {children}
     </AuthContext.Provider>
   );

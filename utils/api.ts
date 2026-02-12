@@ -35,12 +35,20 @@ api.interceptors.response.use(
 // Auth
 export const login = async (payload: { email: string; password: string }) => {
   const res = await api.post("/auth/login", payload);
-  return res.data; // returns { user, token }
+  // Backend returns: { _id, name, email, role, token }
+  return {
+    user: { id: res.data._id, name: res.data.name, email: res.data.email, role: res.data.role },
+    token: res.data.token
+  };
 };
 
-export const signup = async (payload: { email: string; password: string; role: "client" | "stylist" }) => {
+export const signup = async (payload: { email: string; password: string; role: "client" | "stylist"; name: string }) => {
   const res = await api.post("/auth/signup", payload);
-  return res.data; // returns { user, token }
+  // Backend returns: { _id, name, email, role, token }
+  return {
+    user: { id: res.data._id, name: res.data.name, email: res.data.email, role: res.data.role },
+    token: res.data.token
+  };
 };
 
 // Wallet

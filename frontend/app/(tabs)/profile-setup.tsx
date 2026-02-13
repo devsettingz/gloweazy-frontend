@@ -30,7 +30,7 @@ export default function ProfileSetupScreen() {
       setPhone('');
       setBusinessName('');
       setBio('');
-      router.replace('/dashboard'); // ✅ typed navigation
+      router.replace('/(tabs)/client-dashboard'); // ✅ navigate to client dashboard
     } catch (err: any) {
       const errorMsg = String(err?.response?.data?.message || 'Profile setup failed');
       Alert.alert('Error', errorMsg);

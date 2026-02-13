@@ -4,6 +4,7 @@ import {
     login,
     resetPassword,
     signup,
+    updateProfile,
 } from "../controllers/authController";
 import { protect } from "../middleware/authMiddleware";
 
@@ -19,5 +20,8 @@ router.post("/reset-password", resetPassword);
 router.get("/me", protect, (req: Request, res: Response) => {
   res.json({ message: "Authenticated user", user: req.user });
 });
+
+// ✅ Update profile
+router.post("/profile", protect, updateProfile);
 
 export default router;

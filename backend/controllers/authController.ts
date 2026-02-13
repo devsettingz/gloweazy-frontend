@@ -96,3 +96,35 @@ export const forgotPassword = async (req: Request, res: Response) => {
 export const resetPassword = async (req: Request, res: Response) => {
   res.json({ message: "Reset password route hit" });
 };
+
+// ✅ Update Profile
+export const updateProfile = async (req: Request, res: Response) => {
+  const { id, name, phone, businessName, bio } = req.body;
+  
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    
+    // Update fields if provided
+    if (name) user.name = name;
+    // Note: phone, businessName, bio would need to be added to User schema
+    // For now, just update name
+    
+    await user.save();
+    
+    res.json({ 
+      message: "Profile updated successfully",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (err) {
+    console.error("Profile update error:", err);
+    res.status(500).json({ error: "Profile update failed" });
+  }
+};

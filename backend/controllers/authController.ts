@@ -31,6 +31,9 @@ const generateToken = (id: string) => {
 // ✅ Signup
 export const signup = async (req: Request, res: Response) => {
   const { name, email, password, role } = req.body;
+  
+  // Generate name from email if not provided
+  const userName = name || email.split('@')[0];
 
   try {
     const userExists = await User.findOne({ email });
@@ -41,7 +44,7 @@ export const signup = async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
-      name,
+      name: userName,
       email,
       password: hashedPassword,
       role: role || "client",

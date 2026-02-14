@@ -5,7 +5,8 @@
     "start": "node dist/server.js",
     "dev": "ts-node server.ts",
     "build": "tsc",
-    "postinstall": "npm run build"
+    "postinstall": "npm run build",
+    "seed": "ts-node scripts/seed.ts"
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.6",

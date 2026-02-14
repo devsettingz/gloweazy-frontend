@@ -1,26 +1,22 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import { protect } from "../middleware/authMiddleware";
+import {
+  getBalance,
+  topUp,
+  getTransactions,
+  holdEscrow,
+  releaseEscrow,
+  requestPayout,
+} from "../controllers/walletController";
 
 const router = Router();
 
-// GET /wallet/balance
-router.get("/balance", protect, async (req: Request, res: Response) => {
-  res.json({ balance: 0 });
-});
-
-// GET /wallet/transactions
-router.get("/transactions", protect, async (req: Request, res: Response) => {
-  res.json({ transactions: [] });
-});
-
-// POST /wallet/escrow/hold
-router.post("/escrow/hold", protect, async (req: Request, res: Response) => {
-  res.json({ message: "Funds held" });
-});
-
-// POST /wallet/escrow/release
-router.post("/escrow/release", protect, async (req: Request, res: Response) => {
-  res.json({ message: "Funds released" });
-});
+// Wallet
+router.get("/balance", protect, getBalance);
+router.get("/transactions", protect, getTransactions);
+router.post("/topup", protect, topUp);
+router.post("/escrow/hold", protect, holdEscrow);
+router.post("/escrow/release", protect, releaseEscrow);
+router.post("/payout", protect, requestPayout);
 
 export default router;

@@ -1,27 +1,7 @@
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import mongoose, { Document, Schema } from "mongoose";
-
-// User interface
-interface IUser extends Document {
-  name: string;
-  email: string;
-  password: string;
-  role: "client" | "stylist" | "admin";
-}
-
-const UserSchema: Schema = new Schema(
-  {
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    role: { type: String, enum: ["client", "stylist", "admin"], default: "client" },
-  },
-  { timestamps: true }
-);
-
-const User = mongoose.model<IUser>("User", UserSchema);
+import User from "../models/User";
 
 // Generate JWT
 const generateToken = (id: string) => {

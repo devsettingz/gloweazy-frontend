@@ -5,7 +5,7 @@ import connectDB from "./config/db";
 
 // Route imports
 import authRoutes from "./routes/auth";
-import bookingRoutes from "./routes/bookings-expanded";
+import bookingRoutes from "./routes/bookings";
 import stylistRoutes from "./routes/stylists";
 import walletRoutes from "./routes/wallet";
 import notificationRoutes from "./routes/notifications";

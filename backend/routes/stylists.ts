@@ -1,26 +1,26 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import { protect } from "../middleware/authMiddleware";
+import {
+  searchStylists,
+  getStylist,
+  createStylistProfile,
+  addService,
+  getMyServices,
+  setAvailability,
+  getAvailability,
+} from "../controllers/stylistController";
 
 const router = Router();
 
-// GET /stylists/search
-router.get("/search", async (req: Request, res: Response) => {
-  res.json({ stylists: [] });
-});
+// Public routes
+router.get("/search", searchStylists);
+router.get("/:id", getStylist);
 
-// GET /stylists/:id
-router.get("/:id", async (req: Request, res: Response) => {
-  res.json({ stylist: {} });
-});
-
-// POST /stylist/services
-router.post("/services", protect, async (req: Request, res: Response) => {
-  res.json({ message: "Service created" });
-});
-
-// GET /stylist/services
-router.get("/services", protect, async (req: Request, res: Response) => {
-  res.json({ services: [] });
-});
+// Protected stylist routes
+router.post("/profile", protect, createStylistProfile);
+router.post("/services", protect, addService);
+router.get("/services/me", protect, getMyServices);
+router.post("/availability", protect, setAvailability);
+router.get("/availability/me", protect, getAvailability);
 
 export default router;

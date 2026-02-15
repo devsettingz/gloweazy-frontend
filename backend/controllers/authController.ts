@@ -4,8 +4,8 @@ import jwt from "jsonwebtoken";
 import User from "../models/User";
 
 // Generate JWT
-const generateToken = (id: string) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET!, { expiresIn: "30d" });
+const generateToken = (id: string, name: string, email: string, role: string) => {
+  return jwt.sign({ id, name, email, role }, process.env.JWT_SECRET!, { expiresIn: "30d" });
 };
 
 // ✅ Signup
@@ -35,7 +35,7 @@ export const signup = async (req: Request, res: Response) => {
       name: user.name,
       email: user.email,
       role: user.role,
-      token: generateToken(user._id.toString()),
+      token: generateToken(user._id.toString(), user.name, user.email, user.role),
     });
   } catch (err) {
     console.error("Signup error:", err);
@@ -59,7 +59,7 @@ export const login = async (req: Request, res: Response) => {
       name: user.name,
       email: user.email,
       role: user.role,
-      token: generateToken(user._id.toString()),
+      token: generateToken(user._id.toString(), user.name, user.email, user.role),
     });
   } catch (err) {
     console.error("Login error:", err);

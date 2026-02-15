@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db";
+import { autoSeedDatabase } from "./utils/autoSeed";
 
 // Route imports
 import authRoutes from "./routes/auth";
@@ -140,6 +141,9 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   try {
     await connectDB(MONGO_URI);
     console.log("✅ Connected to MongoDB");
+
+    // Auto-seed database if empty
+    await autoSeedDatabase();
 
     app.listen(PORT, () => {
       console.log(`🚀 Backend running on http://localhost:${PORT}`);

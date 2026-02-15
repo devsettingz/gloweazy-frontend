@@ -60,7 +60,8 @@ export default function SignupScreen() {
     try {
       const { user, token } = await apiSignup({ email, password, role });
       await login(user, token);
-      router.replace('/(tabs)/profile-setup');
+      // Show success screen before profile setup
+      router.replace('/signup-success');
     } catch (err: any) {
       // Toast error handled by API
     } finally {

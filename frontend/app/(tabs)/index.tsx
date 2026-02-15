@@ -16,11 +16,13 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
+import { useWallet } from '../../context/WalletContext';
 import { COLORS, TYPOGRAPHY, SPACING, SHADOWS, RADIUS, GRADIENTS } from '../../constants/luxuryTheme';
 
 export default function MainHomeScreen() {
   const router = useRouter();
   const { user, logout } = useAuth();
+  const { balance, refresh: refreshWallet } = useWallet();
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(20)).current;
@@ -38,6 +40,9 @@ export default function MainHomeScreen() {
         useNativeDriver: true,
       }),
     ]).start();
+    
+    // Fetch wallet data
+    refreshWallet();
   }, []);
 
   const getGreeting = () => {
@@ -120,7 +125,7 @@ export default function MainHomeScreen() {
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statCard}>
-          <Text style={styles.statNumber}>$0</Text>
+          <Text style={styles.statNumber}>GHS {balance?.toFixed(0) || '0'}</Text>
           <Text style={styles.statLabel}>Wallet</Text>
         </View>
       </Animated.View>

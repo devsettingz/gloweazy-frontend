@@ -37,7 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const loadAuth = async () => {
       try {
         const storedUser = await AsyncStorage.getItem('authUser');
-        const storedToken = await AsyncStorage.getItem('authToken');
+        const storedToken = await AsyncStorage.getItem('gloweazy_token');
         if (storedUser) setUser(JSON.parse(storedUser) as User);
         if (storedToken) setToken(storedToken);
       } finally {
@@ -54,14 +54,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // ✅ Add lastLogin timestamp when user logs in
     const userWithLogin = { ...u, lastLogin: new Date().toISOString() };
     await AsyncStorage.setItem('authUser', JSON.stringify(userWithLogin));
-    await AsyncStorage.setItem('authToken', t);
+    await AsyncStorage.setItem('gloweazy_token', t);
     setUser(userWithLogin);
     setToken(t);
   };
 
   const logout = async () => {
     await AsyncStorage.removeItem('authUser');
-    await AsyncStorage.removeItem('authToken');
+    await AsyncStorage.removeItem('gloweazy_token');
     setUser(null);
     setToken(null);
   };

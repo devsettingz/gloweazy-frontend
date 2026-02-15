@@ -42,7 +42,7 @@ export const login = async (payload: { email: string; password: string }) => {
   };
 };
 
-export const signup = async (payload: { email: string; password: string; role: "client" | "stylist"; name: string }) => {
+export const signup = async (payload: { email: string; password: string; role: "client" | "stylist"; name?: string }) => {
   const res = await api.post("/auth/signup", payload);
   // Backend returns: { _id, name, email, role, token }
   return {

@@ -17,12 +17,15 @@ export type TransactionStatus = 'pending' | 'completed' | 'failed' | 'released';
 /** Wallet transaction */
 export interface WalletTransaction {
   id: string;
-  type: TransactionType;
+  type: TransactionType | 'credit' | 'debit' | 'escrow' | 'payout';
   amount: number;
-  description: string;
+  currency?: string;
+  description?: string;
   createdAt: string;
-  status: TransactionStatus;
+  status: TransactionStatus | 'pending' | 'completed' | 'failed' | 'released';
   bookingId?: string;
+  reference?: string;
+  method?: string;
 }
 
 /** Wallet state interface */

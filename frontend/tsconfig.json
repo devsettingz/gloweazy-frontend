@@ -38,6 +38,7 @@
   },
   "include": [
     "app",
+    "global.d.ts",
     ".expo/router/types.d.ts"
   ],
   "extends": "expo/tsconfig.base"

@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db";
 import { autoSeedDatabase } from "./utils/autoSeed";
+import { startKeepAlive } from "./utils/keepAlive";
 
 // Route imports
 import authRoutes from "./routes/auth";
@@ -170,6 +171,9 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     app.listen(PORT, () => {
       console.log(`🚀 Backend running on http://localhost:${PORT}`);
       console.log(`📚 API Docs: http://localhost:${PORT}/api/routes`);
+      
+      // Self-ping to prevent Render cold start
+      startKeepAlive(`https://gloweazy-backend.onrender.com`);
     });
   } catch (err) {
     console.error("❌ Failed to connect to MongoDB", err);

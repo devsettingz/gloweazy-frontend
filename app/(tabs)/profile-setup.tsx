@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '../../utils/api';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -17,7 +17,7 @@ export default function ProfileSetupScreen() {
   const handleProfileSetup = async () => {
     setLoading(true);
     try {
-      const res = await axios.post('https://gloweazy-backend.onrender.com/auth/profile', {
+      const res = await api.post('/auth/profile', {
         id: user?.id,
         name,
         phone,

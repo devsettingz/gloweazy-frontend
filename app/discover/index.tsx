@@ -129,54 +129,37 @@ function DiscoverScreen() {
 
       const currentPage = reset ? 1 : page;
 
-      // TODO: Replace with actual API call
-      // const res = await api.get('/stylists/search', {
-      //   params: {
-      //     q: searchQuery,
-      //     filter: activeFilter,
-      //     page: currentPage,
-      //     limit: 10,
-      //   },
-      // });
-
-      // Mock data
-      await new Promise((resolve) => setTimeout(resolve, reset ? 800 : 600));
-
-      const mockStylists: Stylist[] = [
-        {
-          id: "stylist_1",
-          name: "Sarah's Beauty Studio",
-          rating: 4.9,
-          reviewCount: 128,
-          location: "Downtown",
-          distance: "0.8 mi",
-          services: [
-            { name: "Haircut", price: 45 },
-            { name: "Color", price: 85 },
-          ],
-          categories: ["hair", "makeup"],
-          isAvailableToday: true,
-          isFeatured: true,
+      // Call actual API
+      const res = await api.get('/stylists/search', {
+        params: {
+          q: searchQuery,
+          filter: activeFilter,
+          page: currentPage,
+          limit: 10,
         },
-        {
-          id: "stylist_2",
-          name: "Glam by Jessica",
-          rating: 4.7,
-          reviewCount: 89,
-          location: "Midtown",
-          distance: "1.2 mi",
-          services: [
-            { name: "Makeup", price: 65 },
-            { name: "Blowout", price: 35 },
-          ],
-          categories: ["makeup", "hair"],
-          isAvailableToday: true,
-          isFeatured: true,
-        },
-        {
-          id: "stylist_3",
-          name: "Nails by Maria",
-          rating: 4.8,
+      });
+
+      const apiStylists = res.data.stylists || res.data || [];
+      
+      // Transform API data to match our interface
+      const mappedStylists: Stylist[] = apiStylists.map((s: any) => ({
+        id: s._id || s.id,
+        name: s.name,
+        avatarUrl: s.profileImage,
+        rating: s.rating || 4.5,
+        reviewCount: s.reviewCount || 0,
+        location: s.location?.city || s.location?.address || 'Accra',
+        distance: 'Nearby',
+        services: s.services?.map((svc: any) => ({
+          name: svc.name,
+          price: svc.price
+        })) || [],
+        categories: s.specialty || ['hair'],
+        isAvailableToday: s.isAvailable !== false,
+        isFeatured: s.rating >= 4.8,
+      }));
+
+      const fallbackStylists: Stylist[] = mappedStylists.length > 0 ? [] : [
           reviewCount: 234,
           location: "Westside",
           distance: "2.1 mi",
@@ -231,8 +214,11 @@ function DiscoverScreen() {
         },
       ];
 
+      // Combine API results with fallback if needed
+      const allStylists = mappedStylists.length > 0 ? mappedStylists : fallbackStylists;
+
       // Filter based on active filter
-      let filtered = mockStylists;
+      let filtered = allStylists;
       if (activeFilter !== "all") {
         filtered = mockStylists.filter((s) => {
           if (activeFilter === "top-rated") return s.rating >= 4.8;
@@ -252,7 +238,7 @@ function DiscoverScreen() {
         );
       }
 
-      const featured = mockStylists.filter((s) => s.isFeatured).slice(0, 5);
+      const featured = allStylists.filter((s) => s.isFeatured).slice(0, 5);
 
       if (reset) {
         setStylists(filtered);

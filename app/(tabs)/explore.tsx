@@ -27,7 +27,7 @@ export default function ExploreScreen() {
   useEffect(() => {
     const fetchStylists = async () => {
       try {
-        const res = await axios.get('https://gloweazy-backend.onrender.com/stylists');
+        const res = await axios.get('https://gloweazy-backend.onrender.com/stylists/search');
         // ✅ handle both possible response shapes
         const data = res.data.stylists ?? res.data;
         setStylists(data);

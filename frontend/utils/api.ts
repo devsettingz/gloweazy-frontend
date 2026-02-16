@@ -93,13 +93,16 @@ export const getTransactions = async (userId: string) => {
 // Types
 export type WalletTransaction = {
   id: string;
-  type: "credit" | "debit";
+  type: "credit" | "debit" | "escrow" | "payout";
   amount: number;
-  currency: "GHS" | "USD" | "NGN";
-  method: "card" | "mobile_money" | "cash" | "wallet" | "adjustment";
+  currency?: string;
+  method?: string;
   reference?: string;
+  description?: string;
   createdAt: string;
   note?: string;
+  bookingId?: string;
+  status?: "pending" | "completed" | "failed" | "released";
 };
 
 export default api;

@@ -5,7 +5,7 @@
 
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import Toast from 'react-native-toast-message';
-import api from '../utils/api';
+import api, { WalletTransaction as ApiWalletTransaction } from '../utils/api';
 import { useAuth } from './AuthContext';
 
 /** Transaction type including escrow */
@@ -14,19 +14,8 @@ export type TransactionType = 'credit' | 'debit' | 'escrow';
 /** Transaction status */
 export type TransactionStatus = 'pending' | 'completed' | 'failed' | 'released';
 
-/** Wallet transaction */
-export interface WalletTransaction {
-  id: string;
-  type: TransactionType | 'credit' | 'debit' | 'escrow' | 'payout';
-  amount: number;
-  currency?: string;
-  description?: string;
-  createdAt: string;
-  status: TransactionStatus | 'pending' | 'completed' | 'failed' | 'released';
-  bookingId?: string;
-  reference?: string;
-  method?: string;
-}
+/** Wallet transaction - re-exported from API types */
+export interface WalletTransaction extends ApiWalletTransaction {}
 
 /** Wallet state interface */
 interface WalletState {

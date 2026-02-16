@@ -14,6 +14,10 @@
     "isolatedModules": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./"
+    ],
     "types": [
       "expo-router/types"
     ],
@@ -39,6 +43,11 @@
   "include": [
     "app",
     "global.d.ts",
+    "context",
+    "utils",
+    "components",
+    "constants",
+    "hooks",
     ".expo/router/types.d.ts"
   ],
   "extends": "expo/tsconfig.base"

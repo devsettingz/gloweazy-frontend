@@ -50,6 +50,17 @@ app.use("/transactions", transactionsRoutes);
 // Store routes (products)
 app.use("/store", storeRoutes);
 
+// Manual seed endpoint (for admin use)
+app.post("/admin/seed", async (req: Request, res: Response) => {
+  try {
+    await autoSeedDatabase();
+    const count = await (await import("./models/Stylist")).default.countDocuments();
+    res.json({ message: "Database seeded", stylists: count });
+  } catch (err) {
+    res.status(500).json({ error: "Seeding failed" });
+  }
+});
+
 // ============================================
 // HEALTH & STATUS
 // ============================================

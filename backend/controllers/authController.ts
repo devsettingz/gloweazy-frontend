@@ -11,6 +11,11 @@ const generateToken = (id: string, name: string, email: string, role: string) =>
 // ✅ Signup
 export const signup = async (req: Request, res: Response) => {
   const { name, email, password, role } = req.body;
+
+  // Validate required fields
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password are required" });
+  }
   
   // Generate name from email if not provided
   const userName = name || email.split('@')[0];
@@ -46,6 +51,11 @@ export const signup = async (req: Request, res: Response) => {
 // ✅ Login
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
+
+  // Validate input
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password are required" });
+  }
 
   try {
     const user = await User.findOne({ email });

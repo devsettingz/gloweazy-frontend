@@ -158,17 +158,21 @@ const sampleStylists = [
 
 export const autoSeedDatabase = async () => {
   try {
+    // Wait a moment for DB connection to be fully ready
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
     // Check if stylists already exist
     const count = await Stylist.countDocuments();
     
     if (count === 0) {
       console.log("📦 Database empty - seeding with sample data...");
-      await Stylist.insertMany(sampleStylists);
-      console.log(`✅ Added ${sampleStylists.length} sample stylists`);
+      const result = await Stylist.insertMany(sampleStylists);
+      console.log(`✅ Added ${result.length} sample stylists`);
     } else {
       console.log(`📊 Database already has ${count} stylists - skipping seed`);
     }
   } catch (err) {
     console.error("❌ Auto-seeding failed:", err);
+    throw err; // Re-throw so we can catch it in the server
   }
 };

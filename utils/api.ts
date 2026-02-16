@@ -9,7 +9,7 @@ export const setLogoutHandler = (fn: () => void) => {
 
 const api = axios.create({
   baseURL: "https://gloweazy-backend.onrender.com",
-  timeout: 15000,
+  timeout: 60000, // 60 seconds for Render free tier cold start
 });
 
 // Attach token automatically
@@ -52,24 +52,24 @@ export const signup = async (payload: { email: string; password: string; role: "
 };
 
 // Wallet
-export const getWallet = async (userId: string) => {
-  const res = await api.get(`/wallet/${userId}`);
+export const getWallet = async () => {
+  const res = await api.get("/wallet/balance");
   const data = res.data.wallet ?? res.data;
-  return data as { balance: number; transactions: WalletTransaction[] };
+  return data as { balance: number; currency: string; transactions: WalletTransaction[] };
 };
 
-export const topupWallet = async (payload: { userId: string; amount: number; method: "card" | "mobile_money" }) => {
+export const topupWallet = async (payload: { amount: number; method: "card" | "mobile_money"; reference?: string }) => {
   const res = await api.post("/wallet/topup", payload);
   return res.data;
 };
 
-export const confirmTopup = async (payload: { userId: string; reference: string }) => {
+export const confirmTopup = async (payload: { reference: string }) => {
   const res = await api.post("/wallet/confirm", payload);
   return res.data;
 };
 
-export const debitWallet = async (payload: { userId: string; amount: number; bookingId: string }) => {
-  const res = await api.post("/wallet/debit", payload);
+export const debitWallet = async (payload: { amount: number; bookingId: string }) => {
+  const res = await api.post("/wallet/escrow/hold", payload);
   return res.data;
 };
 
@@ -84,10 +84,26 @@ export const checkoutPayment = async (payload: {
 };
 
 // Transactions
-export const getTransactions = async (userId: string) => {
-  const res = await api.get(`/transactions/${userId}`);
+export const getTransactions = async () => {
+  const res = await api.get("/wallet/transactions");
   const data = res.data.transactions ?? res.data;
   return data as WalletTransaction[];
+};
+
+// Stylists
+export const getStylists = async (params?: { specialty?: string; city?: string; search?: string }) => {
+  const res = await api.get("/stylists/search", { params });
+  return res.data;
+};
+
+export const getStylistById = async (id: string) => {
+  const res = await api.get(`/stylists/${id}`);
+  return res.data;
+};
+
+export const getStylistServices = async (id: string) => {
+  const res = await api.get(`/stylists/${id}/services`);
+  return res.data;
 };
 
 // Types

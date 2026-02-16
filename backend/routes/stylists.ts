@@ -6,6 +6,7 @@ import {
   createStylistProfile,
   addService,
   getMyServices,
+  getServicesById,
   setAvailability,
   getAvailability,
 } from "../controllers/stylistController";
@@ -15,6 +16,7 @@ const router = Router();
 // Public routes
 router.get("/search", searchStylists);
 router.get("/:id", getStylist);
+router.get("/:id/services", getServicesById);
 
 // Protected stylist routes
 router.post("/profile", protect, createStylistProfile);

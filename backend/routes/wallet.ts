@@ -14,6 +14,7 @@ const router = Router();
 // Wallet
 router.get("/balance", protect, getBalance);
 router.get("/transactions", protect, getTransactions);
+router.get("/:userId", protect, getBalance); // Backward compatibility
 router.post("/topup", protect, topUp);
 router.post("/confirm", protect, (req: Request, res: Response) => {
   // Payment confirmation webhook simulation

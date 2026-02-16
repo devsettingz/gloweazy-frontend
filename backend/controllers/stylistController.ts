@@ -175,6 +175,23 @@ export const getMyServices = async (req: Request, res: Response) => {
   }
 };
 
+// Get services by stylist ID (public)
+export const getServicesById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const stylist = await Stylist.findById(id);
+    
+    if (!stylist) {
+      return res.status(404).json({ error: "Stylist not found" });
+    }
+    
+    res.json({ services: stylist.services });
+  } catch (err) {
+    console.error("Get services by ID error:", err);
+    res.status(500).json({ error: "Failed to get services" });
+  }
+};
+
 // Set availability
 export const setAvailability = async (req: Request, res: Response) => {
   try {

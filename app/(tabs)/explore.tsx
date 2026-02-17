@@ -12,9 +12,9 @@ import {
 } from 'react-native';
 
 type Stylist = {
-  id: string;
+  _id: string;
   name: string;
-  specialty: string;
+  specialty: string[];
   rating: number;
   profileImage?: string;
 };
@@ -50,19 +50,19 @@ export default function ExploreScreen() {
         <Text style={styles.subtitle}>No stylists available</Text>
       ) : (
         stylists.map((s) => (
-          <View key={s.id} style={styles.card}>
+          <View key={s._id} style={styles.card}>
             {s.profileImage && (
               <Image source={{ uri: s.profileImage }} style={styles.avatar} />
             )}
             <Text style={styles.cardTitle}>{s.name}</Text>
-            <Text style={styles.cardText}>Specialty: {s.specialty}</Text>
+            <Text style={styles.cardText}>Specialty: {s.specialty?.join(', ') || 'General'}</Text>
             <Text style={styles.cardText}>Rating: ⭐ {s.rating}</Text>
             <TouchableOpacity
               style={styles.button}
               onPress={() =>
                 router.push({
                   pathname: '/book/[id]',
-                  params: { id: s.id }, // ✅ typed navigation
+                  params: { id: s._id },
                 })
               }
             >

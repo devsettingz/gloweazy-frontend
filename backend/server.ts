@@ -77,6 +77,41 @@ app.post("/admin/seed", async (req: Request, res: Response) => {
   }
 });
 
+// Create default admin endpoint
+app.post("/admin/create-default", async (req: Request, res: Response) => {
+  try {
+    const bcrypt = await import("bcryptjs");
+    const User = (await import("./models/User")).default;
+    
+    const existingAdmin = await User.findOne({ email: "admin@gloweazy.com" });
+    if (existingAdmin) {
+      return res.json({ 
+        message: "Admin already exists", 
+        email: "admin@gloweazy.com",
+        password: "admin123"
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash("admin123", 10);
+    await User.create({
+      name: "Super Admin",
+      email: "admin@gloweazy.com",
+      password: hashedPassword,
+      role: "admin",
+      isActive: true,
+    });
+
+    res.json({ 
+      message: "Admin created successfully",
+      email: "admin@gloweazy.com",
+      password: "admin123"
+    });
+  } catch (err) {
+    console.error("Create admin error:", err);
+    res.status(500).json({ error: "Failed to create admin" });
+  }
+});
+
 // ============================================
 // HEALTH & STATUS
 // ============================================

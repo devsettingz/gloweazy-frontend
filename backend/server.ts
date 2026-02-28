@@ -13,6 +13,7 @@ import walletRoutes from "./routes/wallet";
 import notificationRoutes from "./routes/notifications";
 import transactionsRoutes from "./routes/transactions";
 import storeRoutes from "./routes/store";
+import adminRoutes from "./routes/admin";
 
 dotenv.config();
 
@@ -61,6 +62,9 @@ app.use("/transactions", transactionsRoutes);
 
 // Store routes (products)
 app.use("/store", storeRoutes);
+
+// Admin routes (protected, admin only)
+app.use("/admin", adminRoutes);
 
 // Manual seed endpoint (for admin use)
 app.post("/admin/seed", async (req: Request, res: Response) => {
